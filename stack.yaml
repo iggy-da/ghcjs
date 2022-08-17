@@ -1,6 +1,7 @@
 resolver: lts-15.0
 packages:
   - .
+  - transformers-base # upstream version uses ∷ rather than :: syntax - not supported by our fork
 
 local-bin-path: inplace/bin
 
