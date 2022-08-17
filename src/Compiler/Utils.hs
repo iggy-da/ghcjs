@@ -49,7 +49,7 @@ import           Packages          (getPackageIncludePath, Version
 import           Panic             (throwGhcExceptionIO)
 import qualified SysTools
 import           FileCleanup ( newTempName, TempFileLifetime(..) )
-import           LlvmCodeGen ( llvmVersionList )
+-- import           LlvmCodeGen ( llvmVersionList ) -- FIXME: Our DA version of GHC does not have llvmVersionList
 -- import           Panic
 
 import qualified Control.Exception as Ex
@@ -288,16 +288,17 @@ doCpp dflags raw input_fn output_fn = do
                        ])
 
 getBackendDefs :: DynFlags -> IO [String]
-getBackendDefs dflags | hscTarget dflags == HscLlvm = do
-    llvmVer <- SysTools.figureLlvmVersion dflags
-    return $ case fmap llvmVersionList llvmVer of
-               Just [m] -> [ "-D__GLASGOW_HASKELL_LLVM__=" ++ format (m,0) ]
-               Just (m:n:_) -> [ "-D__GLASGOW_HASKELL_LLVM__=" ++ format (m,n) ]
-               _ -> []
-  where
-    format (major, minor)
-      | minor >= 100 = error "getBackendDefs: Unsupported minor version"
-      | otherwise = show $ (100 * major + minor :: Int) -- Contract is Int
+-- FIXME: Our DA version of GHC does not have llvmVersionList
+-- getBackendDefs dflags | hscTarget dflags == HscLlvm = do
+--     llvmVer <- SysTools.figureLlvmVersion dflags
+--     return $ case fmap llvmVersionList llvmVer of
+--                Just [m] -> [ "-D__GLASGOW_HASKELL_LLVM__=" ++ format (m,0) ]
+--                Just (m:n:_) -> [ "-D__GLASGOW_HASKELL_LLVM__=" ++ format (m,n) ]
+--                _ -> []
+--   where
+--     format (major, minor)
+--       | minor >= 100 = error "getBackendDefs: Unsupported minor version"
+--       | otherwise = show $ (100 * major + minor :: Int) -- Contract is Int
 
 getBackendDefs _ =
     return []

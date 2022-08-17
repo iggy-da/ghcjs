@@ -252,7 +252,7 @@ initPluginsEnv orig_dflags _ = do
 
 hostPackageDBFlags :: [PackageDBFlag] -> [PackageDBFlag]
 hostPackageDBFlags = mapMaybe f
-  where f (PackageDB (HostPkgConfFile file)) =
+  where f (PackageDB (PkgConfFile file)) =
             Just (PackageDB $ PkgConfFile file)
         f (PackageDB PkgConfFile {}) = Nothing
         f x = Just x
