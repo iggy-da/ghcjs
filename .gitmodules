@@ -1,6 +1,6 @@
 [submodule "ghc"]
 	path = ghc
-	url = git@github.com:iggy-da/daml-native.git
+	url = https://github.com/iggy-da/daml-native.git
 [submodule "lib/ghcjs-node"]
 	path = lib/ghcjs-node
 	url = https://github.com/ghcjs/ghcjs-node.git
