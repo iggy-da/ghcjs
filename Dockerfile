@@ -9,7 +9,7 @@ RUN echo 'deb http://ppa.launchpad.net/hvr/ghc/ubuntu xenial main' > \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F6F88286 && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-      cabal-install-2.2 \
+      cabal-install-2.4 \
       ghc-8.4.2 \
       happy-1.19.5 \
       alex-3.1.7 \
@@ -27,7 +27,7 @@ RUN echo 'deb http://ppa.launchpad.net/hvr/ghc/ubuntu xenial main' > \
       python3 \
       git
 
-ENV PATH /root/.cabal/bin:/root/.local/bin:/opt/cabal/bin:/opt/ghc/8.4.2/bin:/opt/happy/1.19.5/bin:/opt/alex/3.1.7/bin:$PATH
+ENV PATH /opt/ghcjs/ghc/_build/stage1/bin/:/root/.cabal/bin:/root/.local/bin:/opt/cabal/bin:/opt/ghc/8.4.2/bin:/opt/happy/1.19.5/bin:/opt/alex/3.1.7/bin:$PATH
 
 ## node.js
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
@@ -41,6 +41,10 @@ RUN cabal update
 
 ADD . ./ghcjs
 
+RUN cd /opt/ghcjs/ghc &&  \
+    ./boot && \
+    ./hadrian/build.cabal.sh --flavour=devel2 --configure
+
 RUN cd /opt/ghcjs && \
     ./utils/makePackages.sh && \
     ./utils/makeSandbox.sh && \
@@ -48,7 +52,12 @@ RUN cd /opt/ghcjs && \
 
 ENV PATH /opt/ghcjs/.cabal-sandbox/bin:$PATH
 
-RUN cd /opt/ghcjs && \
-    ghcjs-boot -v2 -s ./lib/boot/
+RUN bash -c "git clone --branch 1.40.1 https://github.com/emscripten-core/emsdk.git /opt/emsdk && \
+    cd /opt/emsdk/ && \
+    ./emsdk install 1.40.1 && \
+    ./emsdk activate 1.40.1 && \
+    source ./emsdk_env.sh && \
+    cd /opt/ghcjs && \
+    ghcjs-boot -v2 -s ./lib/boot/"
 
 ENTRYPOINT ["ghcjs"]
