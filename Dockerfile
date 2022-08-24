@@ -48,8 +48,11 @@ RUN cd /opt/ghcjs/ghc &&  \
 RUN cd /opt/ghcjs && \
     ./utils/makePackages.sh && \
     ./utils/makeSandbox.sh && \
-    cabal install
+    cabal v1-install && \
+    apt-get remove -y cabal-install-2.4 ghc-8.4.2 && \
+    apt-get install -y cabal-install-3.0
 
+    # cabal user-config update && \
 ENV PATH /opt/ghcjs/.cabal-sandbox/bin:$PATH
 
 RUN bash -c "git clone --branch 1.40.1 https://github.com/emscripten-core/emsdk.git /opt/emsdk && \
@@ -58,6 +61,8 @@ RUN bash -c "git clone --branch 1.40.1 https://github.com/emscripten-core/emsdk.
     ./emsdk activate 1.40.1 && \
     source ./emsdk_env.sh && \
     cd /opt/ghcjs && \
+    ./utils/makeSandbox.sh && \
+    ./utils/makePackages.sh && \
     ghcjs-boot -v2 -s ./lib/boot/"
 
 ENTRYPOINT ["ghcjs"]
